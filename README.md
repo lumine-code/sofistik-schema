@@ -48,6 +48,8 @@ Definitions are read fresh on each resolution. Installed releases must contain a
 
 The canonical schemas are committed under `schema/`. Run `npm run generate` to rebuild the compact command indexes, metadata and semantic digests.
 
+Each schema slot retains its nativePrefix from the source catalogue before the marker is normalized into kind. An unmarked source slot has an empty string; a synthesized slot without source syntax has null. This preserves distinctions such as plain parameters versus ! identifiers and = fields without claiming that the marker alone defines a numeric type. Existing kind, units and enum metadata remain available alongside it.
+
 Refreshing schemas from an installed SOFiSTiK release is an explicit local pipeline:
 
 ```sh

@@ -24,6 +24,67 @@ class ExtractorTests(unittest.TestCase):
             extractor.resolve_enum_redirects(schema)
             return schema
 
+    def test_preserves_native_prefixes_without_changing_normalized_kinds(self):
+        schema = self.parse_schema(
+            "0000TEST SOFiSTiK\n"
+            "0000VERSION 202600\n"
+            "-*0 TEST X FACT 'NO \"TYPE `NAME !FREE =EXPR\n"
+        )
+        slots = schema["TEST"]["TEST"]["forms"][0]["slots"]
+        self.assertEqual(
+            [(slot["name"], slot["nativePrefix"], slot["kind"]) for slot in slots],
+            [
+                ("X", "", "keyword"),
+                ("FACT", "", "keyword"),
+                ("NO", "'", "literal"),
+                ("TYPE", '"', "enum"),
+                ("NAME", "`", "comment"),
+                ("FREE", "!", "keyword"),
+                ("EXPR", "=", "keyword"),
+            ],
+        )
+
+    def test_source_prefixes_distinguish_otherwise_identical_repeated_forms(self):
+        schema = self.parse_schema(
+            "0000TEST SOFiSTiK\n"
+            "0000VERSION 202600\n"
+            "-*0 ITEM VAL\n"
+            "-*0 ITEM !VAL\n"
+            "-*0 ITEM VAL\n"
+        )
+        forms = schema["TEST"]["ITEM"]["forms"]
+        self.assertEqual(len(forms), 2)
+        self.assertEqual(
+            [form["slots"][0]["nativePrefix"] for form in forms], ["", "!"]
+        )
+        self.assertEqual([form["slots"][0]["kind"] for form in forms], ["keyword"] * 2)
+
+    def test_native_prefixes_survive_localized_reference_hydration(self):
+        with tempfile.TemporaryDirectory() as directory:
+            basic = Path(directory) / "sofistik.err"
+            basic.write_text(
+                "0000SOFISTIK SOFiSTiK\n"
+                "0000VERSION 202600\n"
+                "-10 SEIT FIRS !MARG\n"
+                "-20 PAGE FIRS !MARG\n",
+                encoding="utf-8",
+            )
+            module = Path(directory) / "target.err"
+            module.write_text(
+                "0000TARGET SOFiSTiK\n"
+                "0000VERSION 202600\n"
+                "-10=SEIT\n"
+                "-20=PAGE\n",
+                encoding="utf-8",
+            )
+            commands = extractor.parse_all_err_files(directory)
+            for language, name in (("en", "PAGE"), ("de", "SEIT")):
+                schema, _filled = extractor.build_language_schema(commands, language)
+                slots = schema["TARGET"][name]["forms"][0]["slots"]
+                self.assertEqual([slot["nativePrefix"] for slot in slots], ["", "!"])
+                self.assertEqual(schema["TARGET"][name], schema["BASIC"][name])
+                self.assertIsNone(schema["TARGET"]["ECHO"]["forms"][0]["slots"][0]["nativePrefix"])
+
     def test_parses_a_complete_catalogue_through_localization(self):
         with tempfile.TemporaryDirectory() as directory:
             catalogue = Path(directory) / "dbin.err"

@@ -20,6 +20,7 @@ const SLOT_KINDS = new Set([
   "placeholder",
 ]);
 const ENUM_VALUE_PATTERN = /^[A-Z0-9_().=*+/\->]+$/;
+const NATIVE_PREFIXES = new Set(["", "'", '"', "`", "!", "=", null]);
 
 function writeJson(file, value) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -91,6 +92,11 @@ function validateSchema(schema, filename) {
             throw new Error(`${location} exposes a placeholder as an item`);
           if (!SLOT_KINDS.has(slot.kind))
             throw new Error(`${location} has invalid kind`);
+          if (
+            slot.nativePrefix !== undefined &&
+            !NATIVE_PREFIXES.has(slot.nativePrefix)
+          )
+            throw new Error(`${location} has invalid native prefix`);
           if (
             slot.dataTypeCode !== null &&
             !/^\d{4}$/.test(slot.dataTypeCode)
