@@ -1,8 +1,8 @@
 {
-  "name": "@lumine-code/sofistik-data",
+  "name": "@lumine-code/sofistik-schema",
   "author": "lumine-code",
   "version": "1.0.0",
-  "description": "Provides versioned SOFiSTiK CADINP command and schema data.",
+  "description": "Provides versioned SOFiSTiK CADINP command schemas.",
   "keywords": [
     "sofistik",
     "cadinp",
@@ -11,11 +11,11 @@
     "schema",
     "keywords"
   ],
-  "repository": "https://github.com/lumine-code/sofistik-data",
+  "repository": "https://github.com/lumine-code/sofistik-schema",
   "bugs": {
-    "url": "https://github.com/lumine-code/sofistik-data/issues"
+    "url": "https://github.com/lumine-code/sofistik-schema/issues"
   },
-  "homepage": "https://github.com/lumine-code/sofistik-data#readme",
+  "homepage": "https://github.com/lumine-code/sofistik-schema#readme",
   "license": "MIT",
   "private": true,
   "main": "./lib/index.js",

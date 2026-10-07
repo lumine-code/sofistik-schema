@@ -27,12 +27,12 @@ function npm(arguments_, options = {}) {
 
 test("packs and installs only the supported public library", () => {
   const temporaryRoot = fs.mkdtempSync(
-    path.join(os.tmpdir(), "sofistik-data-package-"),
+    path.join(os.tmpdir(), "sofistik-schema-package-"),
   );
   const resolvedTemporaryRoot = path.resolve(temporaryRoot);
   assert.equal(path.dirname(resolvedTemporaryRoot), path.resolve(os.tmpdir()));
   assert.ok(
-    path.basename(resolvedTemporaryRoot).startsWith("sofistik-data-package-"),
+    path.basename(resolvedTemporaryRoot).startsWith("sofistik-schema-package-"),
   );
 
   try {
@@ -79,7 +79,7 @@ test("packs and installs only the supported public library", () => {
     );
 
     const installed = require(
-      path.join(consumer, "node_modules", "@lumine-code", "sofistik-data"),
+      path.join(consumer, "node_modules", "@lumine-code", "sofistik-schema"),
     );
     assert.equal(installed.getMetadata().formatVersion, 2);
     assert.deepEqual(
@@ -88,7 +88,7 @@ test("packs and installs only the supported public library", () => {
           consumer,
           "node_modules",
           "@lumine-code",
-          "sofistik-data",
+          "sofistik-schema",
           "package.json",
         ),
       ).dependencies || {},
@@ -99,7 +99,7 @@ test("packs and installs only the supported public library", () => {
         consumer,
         "node_modules",
         "@lumine-code",
-        "sofistik-data",
+        "sofistik-schema",
         "fixtures",
         "cadinp-structure.json",
       ),

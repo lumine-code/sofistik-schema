@@ -1,6 +1,6 @@
-# sofistik-data
+# sofistik-schema
 
-Provides versioned SOFiSTiK CADINP command and schema data.
+Provides versioned SOFiSTiK CADINP command schemas.
 
 > **NOTE**: This package is not an official SOFiSTiK product and is not affiliated with or endorsed by SOFiSTiK AG.
 
@@ -17,7 +17,7 @@ Provides versioned SOFiSTiK CADINP command and schema data.
 Install the library from an immutable Git commit:
 
 ```sh
-npm install github:lumine-code/sofistik-data#<commit-sha>
+npm install github:lumine-code/sofistik-schema#<commit-sha>
 ```
 
 The package is distributed through Git pins and is not published to the npm registry.
@@ -25,9 +25,9 @@ The package is distributed through Git pins and is not published to the npm regi
 ## Usage
 
 ```js
-const { SofistikDataProvider } = require("@lumine-code/sofistik-data");
+const { SofistikSchemaProvider } = require("@lumine-code/sofistik-schema");
 
-const data = new SofistikDataProvider();
+const data = new SofistikSchemaProvider();
 const keywords = data.forRelease("2026", "en");
 const aquaCommands = keywords.getModuleCommands("AQUA");
 const concreteForms = keywords.getCommandSchema("AQUA", "CONC").forms;
@@ -35,11 +35,11 @@ const concreteForms = keywords.getCommandSchema("AQUA", "CONC").forms;
 
 `forRelease` requires an explicit supported release and returns `null` for a release or language absent from the committed data. Languages are `en` and `de`, case-insensitively; omitting the language selects English. Dataset lookup never searches installations or definitions and never substitutes a different release.
 
-Consumers compose this library with [sofistik-env](https://github.com/lumine-code/sofistik-env) when they need file declarations and installation discovery:
+Consumers compose this library with [sofistik-context](https://github.com/lumine-code/sofistik-context) when they need file declarations and installation discovery:
 
 ```js
-const { SofistikEnvironmentResolver } = require("@lumine-code/sofistik-env");
-const resolver = new SofistikEnvironmentResolver({
+const { SofistikContextResolver } = require("@lumine-code/sofistik-context");
+const resolver = new SofistikContextResolver({
   fallbackVersion: () => data.getAvailableVersions().at(-1),
 });
 const environment = resolver.resolve({

@@ -37,13 +37,13 @@ function compareDirectory(expectedRoot, actualRoot, relativeDirectory) {
 }
 
 const temporaryRoot = fs.mkdtempSync(
-  path.join(os.tmpdir(), "sofistik-data-generated-"),
+  path.join(os.tmpdir(), "sofistik-schema-generated-"),
 );
 const safeRoot = path.resolve(os.tmpdir());
 const resolvedTemporaryRoot = path.resolve(temporaryRoot);
 if (
   path.dirname(resolvedTemporaryRoot) !== safeRoot ||
-  !path.basename(resolvedTemporaryRoot).startsWith("sofistik-data-generated-")
+  !path.basename(resolvedTemporaryRoot).startsWith("sofistik-schema-generated-")
 ) {
   throw new Error(`Unexpected temporary directory ${resolvedTemporaryRoot}`);
 }

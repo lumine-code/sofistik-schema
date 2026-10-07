@@ -5,7 +5,7 @@ const path = require("node:path");
 const test = require("node:test");
 
 const {
-  SofistikDataProvider,
+  SofistikSchemaProvider,
   getGrammarVocabulary,
   getMetadata,
 } = require("../lib");
@@ -96,7 +96,7 @@ test("derives every compact command index from its canonical schema", () => {
 });
 
 test("binds contexts only to data that actually exists", () => {
-  const data = new SofistikDataProvider();
+  const data = new SofistikSchemaProvider();
   assert.equal(data.forRelease("2099", "en"), null);
   assert.equal(data.forRelease("2026", "pl"), null);
 
@@ -113,7 +113,7 @@ test("binds contexts only to data that actually exists", () => {
 });
 
 test("resolves public executable module aliases", () => {
-  const keywords = new SofistikDataProvider().forRelease("2026", "en");
+  const keywords = new SofistikSchemaProvider().forRelease("2026", "en");
   for (const [publicName, sourceName, command] of [
     ["DBMERG", "DBME", "CDB"],
     ["STAR2", "STAR", "DESI"],
@@ -135,7 +135,7 @@ test("resolves public executable module aliases", () => {
 });
 
 test("exposes ordered slots and compact enum lookups", () => {
-  const keywords = new SofistikDataProvider().forRelease("2026", "en");
+  const keywords = new SofistikSchemaProvider().forRelease("2026", "en");
   const schema = keywords.getCommandSchema("AQUA", "CONC");
   assert.ok(schema.forms[0].slots.length > 3);
   for (const form of schema.forms) {
@@ -149,7 +149,7 @@ test("exposes ordered slots and compact enum lookups", () => {
 });
 
 test("preserves distinct command forms and removes exact duplicates", () => {
-  const data = new SofistikDataProvider();
+  const data = new SofistikSchemaProvider();
   const current = data.forRelease("2026", "en");
   const previous = data.forRelease("2025", "en");
   assert.deepEqual(
@@ -171,7 +171,7 @@ test("preserves distinct command forms and removes exact duplicates", () => {
 });
 
 test("preserves the positional POIN contract in every release and language", () => {
-  const data = new SofistikDataProvider();
+  const data = new SofistikSchemaProvider();
   const expectedNames = {
     de: [
       "REF",
@@ -269,7 +269,7 @@ test("preserves the positional POIN contract in every release and language", () 
 });
 
 test("extracts numeric, punctuated and NONE enum values without catalogue annotations", () => {
-  const data = new SofistikDataProvider();
+  const data = new SofistikSchemaProvider();
   const keywords = data.forRelease("2026", "en");
   const enums = (moduleName, commandName, itemName) =>
     keywords.getParamEnums(moduleName, commandName, itemName);
@@ -310,7 +310,7 @@ test("extracts numeric, punctuated and NONE enum values without catalogue annota
 });
 
 test("maps letter selectors to high positional slots", () => {
-  const keywords = new SofistikDataProvider().forRelease("2026", "en");
+  const keywords = new SofistikSchemaProvider().forRelease("2026", "en");
   const train = keywords.getCommandSchema("SOFILOAD", "TRAI").forms[0].slots;
   assert.deepEqual(
     train.slice(19, 21).map((slot) => ({
@@ -335,7 +335,7 @@ test("maps letter selectors to high positional slots", () => {
 });
 
 test("preserves punctuation in directional and ratio item names", () => {
-  const keywords = new SofistikDataProvider().forRelease("2026", "en");
+  const keywords = new SofistikSchemaProvider().forRelease("2026", "en");
   const names = (moduleName, commandName) =>
     keywords
       .getCommandSchema(moduleName, commandName)
