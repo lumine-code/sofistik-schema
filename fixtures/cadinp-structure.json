@@ -1,0 +1,178 @@
+{
+  "formatVersion": 1,
+  "version": "2026",
+  "language": "en",
+  "cases": [
+    {
+      "name": "Program commands",
+      "source": "+PROG ASE\nHEAD basic\nGRP NO 1 VAL FULL\nEND\n",
+      "programs": [
+        {
+          "name": "ASE",
+          "line": 0,
+          "character": 6
+        }
+      ],
+      "commands": [
+        {
+          "name": "HEAD",
+          "line": 1,
+          "character": 0
+        },
+        {
+          "name": "GRP",
+          "line": 2,
+          "character": 0
+        }
+      ]
+    },
+    {
+      "name": "Semicolon records",
+      "source": "+PROG ASE\nGRP NO 1; GRP NO 2\nEND\n",
+      "programs": [
+        {
+          "name": "ASE",
+          "line": 0,
+          "character": 6
+        }
+      ],
+      "commands": [
+        {
+          "name": "GRP",
+          "line": 1,
+          "character": 0
+        },
+        {
+          "name": "GRP",
+          "line": 1,
+          "character": 10
+        }
+      ]
+    },
+    {
+      "name": "Module tails and intermediate END",
+      "source": "+PROG ASE\nGRP NO 1\nEND\nGRP NO 2\nEND\n+PROG AQUA\nMAT NO 1\nEND\n",
+      "programs": [
+        {
+          "name": "ASE",
+          "line": 0,
+          "character": 6
+        },
+        {
+          "name": "AQUA",
+          "line": 5,
+          "character": 6
+        }
+      ],
+      "commands": [
+        {
+          "name": "GRP",
+          "line": 1,
+          "character": 0
+        },
+        {
+          "name": "GRP",
+          "line": 3,
+          "character": 0
+        },
+        {
+          "name": "MAT",
+          "line": 6,
+          "character": 0
+        }
+      ]
+    },
+    {
+      "name": "Implicit records and continuation",
+      "source": "+PROG ASE\nGRP NO 1 VAL FULL $$\n  OFF\n  2 VAL FULL\nEND\n",
+      "programs": [
+        {
+          "name": "ASE",
+          "line": 0,
+          "character": 6
+        }
+      ],
+      "commands": [
+        {
+          "name": "GRP",
+          "line": 1,
+          "character": 0
+        }
+      ]
+    },
+    {
+      "name": "Flat preprocessor condition",
+      "source": "#IF 1\n+PROG ASE\nGRP NO 1\n#ELSE\n+PROG AQUA\nMAT NO 1\n#ENDIF\nEND\n",
+      "programs": [
+        {
+          "name": "ASE",
+          "line": 1,
+          "character": 6
+        },
+        {
+          "name": "AQUA",
+          "line": 4,
+          "character": 6
+        }
+      ],
+      "commands": [
+        {
+          "name": "GRP",
+          "line": 2,
+          "character": 0
+        },
+        {
+          "name": "MAT",
+          "line": 5,
+          "character": 0
+        }
+      ]
+    },
+    {
+      "name": "Commented scope barrier",
+      "source": "+PROG ASE\nGRP NO 1\nEND\n$PROG AQUA\nMAT NO 1\nEND\n",
+      "programs": [
+        {
+          "name": "ASE",
+          "line": 0,
+          "character": 6
+        }
+      ],
+      "commands": [
+        {
+          "name": "GRP",
+          "line": 1,
+          "character": 0
+        },
+        {
+          "name": "MAT",
+          "line": 4,
+          "character": 0
+        }
+      ]
+    },
+    {
+      "name": "Quoted and commented command words",
+      "source": "+PROG TEMPLATE\nHEAD \"GRP END PROG\" $ GRP NO 1\nTXB IF ELSE LOOP prose\nEND\n",
+      "programs": [
+        {
+          "name": "TEMPLATE",
+          "line": 0,
+          "character": 6
+        }
+      ],
+      "commands": [
+        {
+          "name": "HEAD",
+          "line": 1,
+          "character": 0
+        },
+        {
+          "name": "TXB",
+          "line": 2,
+          "character": 0
+        }
+      ]
+    }
+  ]
+}

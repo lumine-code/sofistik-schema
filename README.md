@@ -11,7 +11,6 @@ Provides versioned SOFiSTiK CADINP command and schema data.
 - **Module identities**: distinguishes source catalogue names from public executable aliases.
 - **Tree-sitter vocabulary**: exposes a deterministic union and digest for parser generation.
 - **Lazy API**: loads only the release and language a consumer requests.
-- **Environment resolver**: extends the lightweight sofistik-env library with exact keyword selection and an offline dataset fallback.
 
 ## Installation
 
@@ -34,15 +33,22 @@ const aquaCommands = keywords.getModuleCommands("AQUA");
 const concreteForms = keywords.getCommandSchema("AQUA", "CONC").forms;
 ```
 
-`forRelease` returns `null` for a release or language absent from the committed data. Omitting a release selects the newest available dataset, and omitting a language selects English.
+`forRelease` requires an explicit supported release and returns `null` for a release or language absent from the committed data. Languages are `en` and `de`, case-insensitively; omitting the language selects English. Dataset lookup never searches installations or definitions and never substitutes a different release.
 
-`resolveProjectTarget({ definitionText, defaultVersion })` remains available as a pure helper for callers that deliberately select from a definition, an explicit fallback, and bundled data. It returns `{ version, source, dataSupported }`, with `source` equal to `definition`, `setting`, or `bundled`. Empty and `Auto` fallbacks are ignored; unsupported selected years remain exact. Runtime consumers use the environment resolver below to include installation discovery.
+Consumers compose this library with [sofistik-env](https://github.com/lumine-code/sofistik-env) when they need file declarations and installation discovery:
 
-`SofistikEnvironmentResolver` extends [sofistik-env](https://github.com/lumine-code/sofistik-env) for consumers that need keyword data. Native consumers that only need installation discovery can use that small library directly. It uses an explicit caller year, `SOF_VERSION` from `sofistik.def` alongside the actual file, the newest actually installed release, then the newest bundled dataset. Its fixed installation root is `C:\Program Files\SOFiSTiK`; installation paths are `<root>/<year>/SOFiSTiK <year>`. Missing installations are reported with `installed: false`, while unsupported selected years stay exact with `dataSupported: false`. `getKeywordContext(context)` uses that exact year and returns `null` when no dataset exists.
+```js
+const { SofistikEnvironmentResolver } = require("@lumine-code/sofistik-env");
+const resolver = new SofistikEnvironmentResolver({
+  fallbackVersion: () => data.getAvailableVersions().at(-1),
+});
+const environment = resolver.resolve({
+  filePath: "C:/Projects/Bridge/model.dat",
+});
+const context = data.forRelease(environment.version, environment.language);
+```
 
-`resolve({ filePath, directoryPath, projectPath, version, language, edition })` returns `{ version, language, edition, root, installPath, installed, dataSupported, versionSource }`. Every argument is optional. `versionSource` is `explicit`, `definition`, `installed`, or `bundled`. A supplied `filePath` always selects only `sofistik.def` in that file's directory; missing adjacent definitions never fall through to a workspace root or ancestor. Files in different directories may therefore use different releases, languages and editions. Without a file path, `directoryPath` selects an explicit directory, `projectPath` remains its compatibility fallback, and the working directory is the final default. Source files and their headers are never read for detection. Explicit `language` wins over `SOF_LANGUAGE = EN` or `DE`, then English. Explicit `edition` wins over `SOF_EDITION = professional` or `educational`, then Professional. These definition keys are integration declarations, not a claim that SOFiSTiK itself interprets them.
-
-Definitions are read fresh on each resolution. Installed releases must contain a calculation executable or a CDB interface; an empty leftover directory is ignored. The installed-release list is cached for at most five seconds; `clearCache()` invalidates it immediately. The resolver accepts injectable filesystem functions, an installation root and clock through its constructor for testing. It neither loads a native interface nor executes a calculation.
+An offline dataset fallback belongs to the consumer's policy. Native database consumers can resolve installations without loading this library. Explicitly selected unsupported releases remain exact and produce no keyword context.
 
 ## Building
 

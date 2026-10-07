@@ -20,12 +20,14 @@
   "private": true,
   "main": "./lib/index.js",
   "exports": {
-    ".": "./lib/index.js"
+    ".": "./lib/index.js",
+    "./fixtures/cadinp-structure.json": "./fixtures/cadinp-structure.json"
   },
   "files": [
     "commands",
     "lib",
-    "schema"
+    "schema",
+    "fixtures"
   ],
   "engines": {
     "node": ">=24"
@@ -48,8 +50,5 @@
     "eslint-plugin-n": "^18.4.0",
     "globals": "^17.12.0",
     "prettier": "^3.9.9"
-  },
-  "dependencies": {
-    "@lumine-code/sofistik-env": "github:lumine-code/sofistik-env#7d14bea69540f905b9538cfb2fa5a191da3ffcea"
   }
 }

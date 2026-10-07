@@ -100,13 +100,14 @@ test("binds contexts only to data that actually exists", () => {
   assert.equal(data.forRelease("2099", "en"), null);
   assert.equal(data.forRelease("2026", "pl"), null);
 
-  const defaultContext = data.forRelease();
+  const defaultContext = data.forRelease("2026");
   assert.equal(defaultContext.getVersion(), "2026");
   assert.equal(defaultContext.getLanguage(), "en");
-  assert.equal(data.forRelease("Auto", "Auto").getVersion(), "2026");
-  assert.equal(data.forRelease("Auto", "Auto").getLanguage(), "en");
+  assert.equal(data.forRelease(), null);
+  assert.equal(data.forRelease("Auto", "Auto"), null);
+  assert.equal(data.forRelease("2026", "English"), null);
 
-  const german = data.forRelease("2024", "German");
+  const german = data.forRelease("2024", "DE");
   assert.equal(german.getVersion(), "2024");
   assert.equal(german.getLanguage(), "de");
 });

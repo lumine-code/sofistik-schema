@@ -52,8 +52,6 @@ test("packs and installs only the supported public library", () => {
     )[0];
     const packedPaths = pack.files.map((file) => file.path);
     assert.ok(packedPaths.includes("lib/index.js"));
-    assert.ok(packedPaths.includes("lib/project-target.js"));
-    assert.ok(packedPaths.includes("lib/environment.js"));
     assert.ok(packedPaths.includes("schema/meta.json"));
     assert.ok(packedPaths.includes("commands/sofistik.2026.en.json"));
     assert.equal(
@@ -84,20 +82,29 @@ test("packs and installs only the supported public library", () => {
       path.join(consumer, "node_modules", "@lumine-code", "sofistik-data"),
     );
     assert.equal(installed.getMetadata().formatVersion, 2);
-    const resolver = new installed.SofistikEnvironmentResolver({
-      readFile: () => null,
-      readdir: () => [],
-      exists: () => false,
-    });
-    assert.equal(resolver.getKeywordContext().getVersion(), "2026");
     assert.deepEqual(
-      installed.resolveProjectTarget({ definitionText: "SOF_VERSION = 2024" }),
-      {
-        version: "2024",
-        source: "definition",
-        dataSupported: true,
-      },
+      require(
+        path.join(
+          consumer,
+          "node_modules",
+          "@lumine-code",
+          "sofistik-data",
+          "package.json",
+        ),
+      ).dependencies || {},
+      {},
     );
+    const corpus = require(
+      path.join(
+        consumer,
+        "node_modules",
+        "@lumine-code",
+        "sofistik-data",
+        "fixtures",
+        "cadinp-structure.json",
+      ),
+    );
+    assert.ok(corpus.cases.length > 0);
     assert.ok(
       installed
         .provider()
