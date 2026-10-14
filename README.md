@@ -56,6 +56,8 @@ The canonical schemas are committed under `schema/`. Run `npm run generate` to r
 
 Each schema slot retains its nativePrefix from the source catalogue before the marker is normalized into kind. An unmarked source slot has an empty string; a synthesized slot without source syntax has null. This preserves distinctions such as plain parameters versus ! identifiers and = fields without claiming that the marker alone defines a numeric type. Existing kind, units and enum metadata remain available alongside it.
 
+SOFiMSHC catalogues omit the ECHO VAL/WERT value list. The extractor supplements this missing list from section 3.9 of the SOFiMSHC manuals for each supported release: NO, YES, FULL, EXTR in English (page 3-17) and NEIN, JA, VOLL, EXTR in German (page 3-17 in 2018/2020, page 3-18 since 2022). It preserves catalogue values and native slot metadata; ECHO SYST can still take a numeric bitmask.
+
 Refreshing schemas from an installed SOFiSTiK release is an explicit local pipeline:
 
 ```sh

@@ -14512,6 +14512,7 @@
         "WARN"
       ],
       "WERT",
+      ["EXTR", "JA", "NEIN", "VOLL"],
       "X",
       "Y",
       "Z"

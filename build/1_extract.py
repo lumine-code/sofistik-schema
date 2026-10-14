@@ -21,6 +21,16 @@ from pathlib import Path
 
 LANGUAGES = ("de", "en")
 UNIVERSAL_COMMANDS = {"de": "SEIT", "en": "PAGE"}
+# SOFiMSHC omits ECHO's value list from its .err catalogues. Section 3.9,
+# page 3-17 of sofimshc_1.pdf (3-17 / 3-18 in sofimshc_0.pdf) documents them in every
+# supported release (2018, 2020, 2022-2026). Keep the slot's native literal
+# metadata: ECHO SYST also accepts a numeric bitmask.
+# https://docs.sofistik.com/2026/fea_pdf/sofimshc_1.pdf
+# https://docs.sofistik.com/2026/fea_pdf/sofimshc_0.pdf
+SOFIMSHC_ECHO_VALUES = {
+    "en": ("VAL", ["EXTR", "FULL", "NO", "YES"]),
+    "de": ("WERT", ["EXTR", "JA", "NEIN", "VOLL"]),
+}
 METADATA_PATH = Path(__file__).resolve().parent.parent / "schema" / "meta.json"
 METADATA = json.loads(METADATA_PATH.read_text(encoding="utf-8"))
 VERSIONS = METADATA["versions"]
@@ -527,6 +537,19 @@ def build_language_schema(all_commands: dict, language: str) -> tuple[dict, set[
     }
     for commands in modules.values():
         commands.setdefault("ECHO", copy.deepcopy(echo_schema))
+
+    echo = modules.get("SOFIMSHC", {}).get("ECHO")
+    if echo:
+        name, values = SOFIMSHC_ECHO_VALUES[language]
+        for slot in command_slots(echo):
+            if (
+                slot["position"] == 2
+                and slot["name"] == name
+                and slot["nativePrefix"] == "'"
+                and not slot["enumValues"]
+                and slot["enumRedirect"] is None
+            ):
+                slot["enumValues"] = list(values)
 
     return modules, set(filled)
 

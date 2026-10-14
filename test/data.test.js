@@ -148,6 +148,33 @@ test("exposes ordered slots and compact enum lookups", () => {
   assert.ok(keywords.getParamEnums("AQUA", "CONC", "type").includes("C"));
 });
 
+test("includes documented SOFIMSHC ECHO values in every release and language", () => {
+  const data = new SofistikSchemaProvider();
+  for (const version of getMetadata().versions) {
+    for (const [language, item, values] of [
+      ["en", "VAL", ["EXTR", "FULL", "NO", "YES"]],
+      ["de", "WERT", ["EXTR", "JA", "NEIN", "VOLL"]],
+    ]) {
+      const keywords = data.forRelease(version, language);
+      const slots = keywords.getCommandSchema("SOFIMSHC", "ECHO").forms[0]
+        .slots;
+      const value = slots.find((slot) => slot.name === item);
+      assert.deepEqual(value.enumValues, values, `${version}.${language}`);
+      assert.deepEqual(
+        keywords.getParamEnums("SOFIMSHC", "ECHO", item),
+        values,
+        `${version}.${language} compact index`,
+      );
+      assert.equal(value.kind, "literal");
+      assert.equal(value.nativePrefix, "'");
+      assert.deepEqual(
+        slots.slice(2).map((slot) => slot.name),
+        ["X", "Y", "Z"],
+      );
+    }
+  }
+});
+
 test("preserves distinct command forms and removes exact duplicates", () => {
   const data = new SofistikSchemaProvider();
   const current = data.forRelease("2026", "en");

@@ -79740,7 +79740,7 @@
               "kind": "literal",
               "nativePrefix": "'",
               "dataTypeCode": null,
-              "enumValues": [],
+              "enumValues": ["EXTR", "JA", "NEIN", "VOLL"],
               "enumRedirect": null
             },
             {

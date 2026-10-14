@@ -81577,7 +81577,7 @@
               "kind": "literal",
               "nativePrefix": "'",
               "dataTypeCode": null,
-              "enumValues": [],
+              "enumValues": ["EXTR", "FULL", "NO", "YES"],
               "enumRedirect": null
             },
             {

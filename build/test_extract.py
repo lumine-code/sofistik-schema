@@ -24,6 +24,49 @@ class ExtractorTests(unittest.TestCase):
             extractor.resolve_enum_redirects(schema)
             return schema
 
+    def test_supplements_missing_sofimshc_echo_values_from_the_manual(self):
+        catalogue = (
+            "0000SOFIMSHC SOFiSTiK\n"
+            "0000VERSION 202600\n"
+            '-10 ECHO"OPT \'WERT X Y Z\n'
+            "-111 VOLL MAT\n"
+            '-20 ECHO"OPT \'VAL X Y Z\n'
+            "-211 FULL MAT\n"
+        )
+        for language, name, values in (
+            ("en", "VAL", ["EXTR", "FULL", "NO", "YES"]),
+            ("de", "WERT", ["EXTR", "JA", "NEIN", "VOLL"]),
+        ):
+            with self.subTest(language=language):
+                schema = self.parse_schema(catalogue, "SOFIMSHC", language)
+                slots = schema["SOFIMSHC"]["ECHO"]["forms"][0]["slots"]
+                self.assertEqual(slots[1]["name"], name)
+                self.assertEqual(slots[1]["enumValues"], values)
+                self.assertEqual(slots[1]["kind"], "literal")
+                self.assertEqual(slots[1]["nativePrefix"], "'")
+                self.assertEqual([slot["enumValues"] for slot in slots[2:]], [[], [], []])
+                self.assertEqual(slots[0]["enumValues"], sorted(["MAT", "FULL" if language == "en" else "VOLL"]))
+
+    def test_keeps_catalogue_echo_values_and_other_modules_unchanged(self):
+        for module, enum_row, expected in (
+            ("SOFIMSHC", "-212 CUSTOM\n", ["CUSTOM"]),
+            ("AQUA", "", []),
+            ("MAXIMA", "", []),
+        ):
+            with self.subTest(module=module):
+                schema = self.parse_schema(
+                    f"0000{module} SOFiSTiK\n"
+                    "0000VERSION 202600\n"
+                    '-20 ECHO"OPT \'VAL\n'
+                    + enum_row,
+                    module,
+                )
+                slot = schema[module]["ECHO"]["forms"][0]["slots"][1]
+                self.assertEqual(slot["enumValues"], expected)
+
+        synthetic = self.parse_schema("0000SOFIMSHC SOFiSTiK\n", "SOFIMSHC")
+        self.assertEqual(synthetic["SOFIMSHC"]["ECHO"]["forms"][0]["slots"][1]["enumValues"], [])
+
     def test_preserves_native_prefixes_without_changing_normalized_kinds(self):
         schema = self.parse_schema(
             "0000TEST SOFiSTiK\n"
