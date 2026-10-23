@@ -36,7 +36,7 @@ test("packs and installs only the supported public library", () => {
   );
 
   try {
-    const pack = JSON.parse(
+    const packResult = JSON.parse(
       npm(
         [
           "pack",
@@ -49,7 +49,12 @@ test("packs and installs only the supported public library", () => {
           cwd: repositoryRoot,
         },
       ),
-    )[0];
+    );
+    assert.equal(Object.keys(packResult).length, 1);
+    const pack = Array.isArray(packResult)
+      ? packResult[0]
+      : packResult["@lumine-code/sofistik-schema"];
+    assert.equal(pack?.name, "@lumine-code/sofistik-schema");
     const packedPaths = pack.files.map((file) => file.path);
     assert.ok(packedPaths.includes("lib/index.js"));
     assert.ok(packedPaths.includes("schema/meta.json"));
